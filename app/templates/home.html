@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planify</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to bottom, #002f4b, #0066cc);
+            color: white;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #222;
+            padding: 15px 20px;
+            border-radius: 0 0 20px 20px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Brand Logo */
+        .navbar .brand {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #00bfff;
+            font-family: Arial, sans-serif;
+        }
+
+        /* Navigation Links */
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 1.1rem;
+            transition: color 0.3s, border-bottom 0.3s;
+            position: relative;
+        }
+
+        /* Hover Effect */
+        .nav-links a:hover {
+            color: #00bfff;
+        }
+
+        /* Underline Animation */
+        .nav-links a::after {
+            content: "";
+            position: absolute;
+            left: 0;
+            bottom: -3px;
+            width: 0%;
+            height: 2px;
+            background-color: #00bfff;
+            transition: width 0.3s;
+        }
+
+        .nav-links a:hover::after {
+            width: 100%;
+        }
+
+        /* Active/Highlighted Link (For Logout) */
+        .nav-links a:last-child {
+            border-bottom: 2px solid transparent;
+        }
+
+        .nav-links a:last-child:hover {
+            border-bottom-color: #00bfff;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .main-content h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .main-content p {
+            font-size: 1.5rem;
+            color: yellow;
+        }
+
+        /* Floating Add Button */
+        .add-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: yellow;
+            color: black;
+            font-size: 2rem;
+            font-weight: bold;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
+        }
+
+        .add-btn:hover {
+            background: orange;
+            transform: scale(1.1);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none; /* Initially hidden */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #e0e0e0;
+            padding: 20px;
+            width: 40%;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal h2 {
+            color: #003366;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .form-group input, 
+        .form-group select {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 1rem;
+            width: 100%;
+        }
+
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .modal-buttons button {
+            padding: 10px 20px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+
+        .create-btn {
+            background: #003366;
+            color: white;
+        }
+
+        .cancel-btn {
+            background: #ccc;
+            color: black;
+        }
+
+        .create-btn:hover {
+            background: #002244;
+        }
+
+        .cancel-btn:hover {
+            background: #bbb;
+        }
+
+        /* .message-banner {
+            display: none;
+            padding: 10px;
+            width: 90%;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 5px;
+            margin-bottom: 10px;
+        }
+
+        .error-banner {
+            background-color: red;
+            color: white;
+        }
+
+        .success-banner {
+            background-color: green;
+            color: white;
+        } */
+
+        .alert-message {
+            display: none;
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: bold;
+            text-align: center;
+            color: white;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .error-500 { background-color: red; }
+        .success-banner { background-color: green; }
+
+
+        /* Floating Chat Button */
+/* Floating Chat Button */
+.chat-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: #00bfff;
+    color: white;
+    font-size: 1.5rem;
+    font-weight: bold;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+    transition: 0.3s;
+    border: none;
+}
+
+.chat-btn:hover {
+    background: #0080ff;
+    transform: scale(1.1);
+}
+
+
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="brand">Planify</div>
+        <div class="nav-links">
+            <a href="/event">Events</a>
+            <a href="/profile">Profile</a>
+            <a href="/home/logout">Logout</a>
+        </div>
+    </div>
+    <div class="alert-message" id="alert-message"></div>
+    <!-- Main Content -->
+    <div class="main-content">
+        <h1>Hey {{username}}!<br>What's on your agenda?</h1>
+        <p>Get started by clicking the + icon below!</p>
+        <p>Get a Personal AI assistant by clicking the 💬 icon below!</p>
+    </div>
+
+    <!-- Floating Chat Button -->
+    <button id="chatBtn" class="chat-btn">💬</button>
+
+    <!-- Floating Add Button -->
+    <button id="openModalBtn" class="add-btn">+</button>
+
+    <!-- Modal -->
+    <div id="eventModal" class="modal" style="display: none;"> <!-- Ensure the modal is hidden initially -->
+        <div class="modal-content">
+            <h2>Create New Event</h2>
+            <div class="form-group">
+                <label>Title</label>
+                <input type="text" placeholder="Enter event title">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" placeholder="Enter event description (max 100 words)">
+            </div>
+            <div class="form-group">
+                <label>Start Date</label>
+                <input type="date">
+            </div>
+            <div class="form-group">
+                <label>Start Time</label>
+                <select id="startTime"></select>
+            </div>
+            <div class="form-group">
+                <label>End Date</label>
+                <input type="date">
+            </div>
+            <div class="form-group">
+                <label>End Time</label>
+                <select id="endTime"></select>
+            </div>
+            <div class="modal-buttons">
+                <button class="create-btn">Create</button>
+                <button id="closeModalBtn" class="cancel-btn">Cancel</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner for success/error -->
+
+    <script>
+        document.getElementById("chatBtn").addEventListener("click", function () {
+    window.location.href = "/chat"; // Redirect to /chat page
+});
+
+        // Time options for the dropdown with AM/PM
+        const times = [];
+        for (let i = 1; i <= 12; i++) {
+            const hour = i < 10 ? `0${i}` : `${i}`;
+            times.push(`${hour}:00 AM`);
+            times.push(`${hour}:30 AM`);
+        }
+
+        for (let i = 1; i <= 12; i++) {
+            const hour = i < 10 ? `0${i}` : `${i}`;
+            times.push(`${hour}:00 PM`);
+            times.push(`${hour}:30 PM`);
+        }
+
+        const startTimeSelect = document.getElementById("startTime");
+        const endTimeSelect = document.getElementById("endTime");
+
+        // Fill the time select dropdowns
+        times.forEach(time => {
+            const startOption = document.createElement("option");
+            startOption.value = time;
+            startOption.textContent = time;
+            startTimeSelect.appendChild(startOption);
+
+            const endOption = document.createElement("option");
+            endOption.value = time;
+            endOption.textContent = time;
+            endTimeSelect.appendChild(endOption);
+        });
+
+        
+
+        document.addEventListener("DOMContentLoaded", function () {
+    const modal = document.getElementById("eventModal");
+    const openButton = document.getElementById("openModalBtn");
+    const closeButton = document.getElementById("closeModalBtn");
+    const createButton = document.querySelector(".create-btn");
+
+    openButton.addEventListener("click", function () {
+        modal.style.display = "flex";
+    });
+
+    closeButton.addEventListener("click", function () {
+        modal.style.display = "none";
+    });
+
+    window.addEventListener("click", function (event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    });
+
+    // Function to format time into ISO 8601
+    function formatTimeToTimeString(date, time) {
+    if (!date || !time) return null;
+
+    let [hour, minute, period] = time.match(/(\d{2}):(\d{2}) (AM|PM)/).slice(1);
+    hour = parseInt(hour, 10);
+    minute = parseInt(minute, 10);
+
+    if (period === "PM" && hour !== 12) hour += 12;
+    if (period === "AM" && hour === 12) hour = 0;
+
+    return `${hour.toString().padStart(2, '0')}:${minute.toString().padStart(2, '0')}:00`;
+}
+
+
+    createButton.addEventListener("click", function () {
+        const title = document.querySelector("input[placeholder='Enter event title']").value.trim();
+        const description = document.querySelector("input[placeholder='Enter event description (max 100 words)']").value.trim();
+        const startDate = document.querySelector("input[type='date']").value;
+        const startTime = document.getElementById("startTime").value;
+        const endDate = document.querySelectorAll("input[type='date']")[1].value;
+        const endTime = document.getElementById("endTime").value;
+
+        if (!title || !description || !startDate || !startTime || !endDate || !endTime) {
+            displayAlertMessage(500,"Please fill all fields!");
+            return;
+        }
+
+        // Format time properly
+        const formattedStartTime = formatTimeToTimeString(startDate, startTime);
+        const formattedEndTime = formatTimeToTimeString(endDate, endTime);
+
+        const eventData = {
+            title,
+            description,
+            startDate,  // YYYY-MM-DD
+            startTime: formattedStartTime,  // HH:MM:SS
+            endDate,  // YYYY-MM-DD
+            endTime: formattedEndTime  // HH:MM:SS
+        };
+
+
+        const accessToken = getCookie('access_token');
+
+        if (!accessToken) {
+            displayAlertMessage(402, 'Authentication token missing. Please log in again.');
+            return;
+        }
+
+        fetch('/event/createevent', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${accessToken}`
+            },
+            body: JSON.stringify(eventData)
+        })
+        .then(async response => {
+            const data = await response.json();
+            
+            if (!response.ok) {
+                displayAlertMessage(response.status, data.detail || "An error occurred while creating the event.");
+                return;
+            }
+
+            displayAlertMessage('success', "Event created successfully!");
+            modal.style.display = "none";
+        })
+        .catch(error => {
+            displayAlertMessage(500, "An unexpected error occurred. Please try again.");
+            console.error("Error:", error);
+        });
+
+    });
+});
+
+
+function displayAlertMessage(errorCode, message) {
+            const errorClasses = {
+                500: 'error-500',
+                success: 'success-banner'
+            };
+            
+            const alertBox = document.getElementById("alert-message");
+            alertBox.textContent = message;
+            alertBox.className = "alert-message " + (errorClasses[errorCode] || 'error-500');
+            alertBox.style.display = "block";
+            alertBox.style.opacity = "1";
+            
+            setTimeout(() => {
+                alertBox.style.opacity = "0";
+                setTimeout(() => { alertBox.style.display = "none"; }, 500);
+            }, 3000);
+        }
+
+
+function getCookie(name) {
+    const cookies = document.cookie.split("; ");
+    for (let cookie of cookies) {
+        let [key, value] = cookie.split("=");
+        if (key === name) return value;
+    }
+    return null;
+}
+
+    </script>
+
+
+
+
+
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Planify</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background: linear-gradient(to bottom, #002f4b, #0066cc);
+            color: white;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+        p {
+            font-size: 1.2rem;
+        }
+        .highlight {
+            color: yellow;
+            font-weight: bold;
+        }
+        .buttons {
+            margin-top: 20px;
+        }
+        .button {
+            background: white;
+            color: black;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            border-radius: 20px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .button:hover {
+            background: lightgray;
+        }
+    </style>
+</head>
+<body>
+    <h1>Planify</h1>
+    <p id="time"></p>
+    <p id="dynamic-phrase">Create, manage and keep track of <span class="highlight">the most important messages</span></p>
+    <div class="buttons">
+        <button class="button" onclick="window.location.href='/login'">Login</button>
+        <button class="button" onclick="window.location.href='/register'">Register</button>
+    </div>
+    <script>
+        // Time Update
+        function updateTime() {
+            const now = new Date();
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' };
+            document.getElementById("time").innerText = `It is now ${now.toLocaleTimeString('en-US', options)}`;
+        }
+        setInterval(updateTime, 1000);
+        updateTime();
+
+        // Typing Effect Logic
+        const phrases = [
+            "your cat's birthday celebration 🎉",
+            "the most important meeting you'll ever forget 😬",
+            "that yoga class you'll always skip 🧘",
+            "your coffee date with destiny ☕",
+            "your early morning call with your boss 😵‍💫",
+            "watering your (dead) plants 🪴",
+            "the road trip you'll always reminisce about 🚗"
+        ];
+        let currentPhrase = '';
+        let loopIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingSpeed = 35;
+        const deletingSpeed = 35;
+        const delay = 2000;
+
+        function typeEffect() {
+            const currentText = phrases[loopIndex % phrases.length];
+
+            if (!isDeleting && charIndex < currentText.length) {
+                currentPhrase += currentText[charIndex];
+                document.getElementById("dynamic-phrase").innerHTML = `Create, manage and keep track of <span class="highlight">${currentPhrase}</span>`;
+                charIndex++;
+                setTimeout(typeEffect, typingSpeed);
+            } else if (isDeleting && charIndex > 0) {
+                currentPhrase = currentPhrase.slice(0, -1);
+                document.getElementById("dynamic-phrase").innerHTML = `Create, manage and keep track of <span class="highlight">${currentPhrase}</span>`;
+                charIndex--;
+                setTimeout(typeEffect, deletingSpeed);
+            } else if (!isDeleting && charIndex === currentText.length) {
+                setTimeout(() => {
+                    isDeleting = true;
+                    typeEffect();
+                }, delay);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                loopIndex++;
+                typeEffect();
+            }
+        }
+        typeEffect();
+    </script>
+</body>
+</html>
